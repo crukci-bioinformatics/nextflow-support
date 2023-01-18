@@ -66,7 +66,7 @@ to not having enough memory. Unless explicitly handled by the developer of the
 code, a Java _OutOfMemoryError_ will dump a stack trace but the task will exit
 with the code 1. This doesn't help Nextflow's retry mechanism because that
 exit code could mean anything. This Groovy script scans `.command.log` for
-the fully qualified exception string, i.e. `java.land.OutOfMemoryError`.
+the fully qualified exception string, i.e. `java.lang.OutOfMemoryError`.
 If it is found, the script exits with error code 104 (by default) rather than
 the error code from the task itself.
 
