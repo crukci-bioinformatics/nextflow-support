@@ -94,7 +94,7 @@ This example will return code 137 if an out of memory message is found.
 
 `removeInput.groovy` is a means of controlling the amount of intermediate
 files filling the disk while Nextflow runs. The Nextflow system provides a
-`[cleanup](https://www.nextflow.io/docs/latest/config.html#miscellaneous)`
+[`cleanup`](https://www.nextflow.io/docs/latest/config.html#miscellaneous)
 option that removes the work directory automatically if the pipeline succeeds,
 but when there is a large amount of disk used before that point it's not a
 solution.
