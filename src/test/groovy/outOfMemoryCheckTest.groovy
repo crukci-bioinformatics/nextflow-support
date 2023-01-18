@@ -101,6 +101,27 @@ class OutOfMemoryCheckTest
         assertEquals(104, proc.exitValue(), "Exit code with ${inCode} and ${commandLogName} with memory error wrong")
     }
 
+    @Test
+    void customExitWithLogAndMemoryFail()
+    {
+        def inCode = '0'
+        command << inCode
+        def outCode = '137'
+        command << outCode
+
+        commandLog.withPrintWriter
+        {
+            pw ->
+            pw.println("Failed because of memory.")
+            pw.println()
+            new OutOfMemoryError().printStackTrace(pw)
+            pw.println("Exit code custom.")
+        }
+
+        def proc = run(command)
+        assertEquals(137, proc.exitValue(), "Exit code with ${inCode} and ${commandLogName} with memory error wrong")
+    }
+
     private Process run(command)
     {
         def pb = new ProcessBuilder(command)
