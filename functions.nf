@@ -2,6 +2,12 @@
  * Miscellaneous helper functions.
  */
 
+@Grab('org.apache.commons:commons-lang3:3.12.0')
+
+import static org.apache.commons.lang3.CharUtils.isAsciiAlphanumeric
+
+import java.text.*
+
 /**
  * Give a number for the Java heap size based on the task memory, allowing for
  * some overhead for the JVM itself from the total allowed.
@@ -63,4 +69,40 @@ def makeCollection(thingOrList)
     }
 
     return null
+}
+
+/**
+ * Make a name safe to be used as a file name. Everything that's not
+ * alphanumeric, dot, underscore or hyphen is converted to an underscore.
+ * Spaces are just removed.
+ */
+def safeName(name)
+{
+    def nameStr = name.toString()
+    def safe = new StringBuilder(nameStr.length())
+    def iter = new StringCharacterIterator(nameStr)
+
+    for (def c = iter.first(); c != CharacterIterator.DONE; c = iter.next())
+    {
+        switch (c)
+        {
+            case { isAsciiAlphanumeric(it) }:
+            case '_':
+            case '-':
+            case '.':
+                safe << c
+                break
+
+            case ' ':
+            case '\t':
+                // Add nothing.
+                break
+
+            default:
+                safe << '_'
+                break
+        }
+    }
+
+    return safe.toString()
 }
