@@ -55,6 +55,13 @@ def sizeOf(thing)
  * If the thing is null, return null.
  *
  * See https://github.com/nextflow-io/nextflow/issues/2425
+ *
+ * This is resolved in Nextflow >= 23.9 with the "arity" attibute on
+ * file and path. If arity is set to '1..*' a glob will return a
+ * collection even if only one file is found to match the pattern.
+ * Conversely, if arity is set to '1' a single file or path is returned
+ * (i.e. not in a collection). Presumably an error is thrown if more
+ * than one file matches.
  */
 def makeCollection(thingOrList)
 {
