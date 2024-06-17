@@ -10,11 +10,12 @@ import java.text.*
 
 /**
  * Give a number for the Java heap size based on the task memory, allowing for
- * some overhead for the JVM itself from the total allowed.
+ * some overhead for the JVM itself from the total allowed. The current overhead
+ * is 128 MB.
  */
 def javaMemMB(task)
 {
-    def overhead = 64
+    def overhead = 128
     def minimum = 16
 
     def javaMem = task.memory.toMega() - overhead
