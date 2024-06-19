@@ -24,6 +24,42 @@ The function insists on a minimum of 16MB left for the heap, so a task using
 this function needs a minimum of 96MB given to it. An exception is thrown
 if there is too little memory given to the task.
 
+#### `javaMemoryOptions`
+
+Having found the memory of Java tasks has been going over the allocation for
+Slurm jobs, `javaMemMB` has been found to be a little too simple. This function
+replaces it and puts a limit on the "meta space" the JVM uses, which is where
+class definitions are stored amongst other things.
+
+By default now the meta space is given 128MB and "other" overhead 64MB. This
+can be tuned with the parameters "java_metaspace_size" and "java_overhead_size"
+to increase them if jobs are still failing. One shouldn't need huge amounts of
+memory for these.
+
+The amount of memory given to the JVM for its heap, where the running objects
+and stored, is thus the task's allocation less the meta space less the
+miscellaneous overhead.
+
+One might see `OutOfMemoryError` messages if things fail that won't be solved
+by giving more to the heap if a job fills the meta space but requires more
+(giving more to the heap won't solve the issue).
+
+There are some things outside of the control of the JVM that might push the
+memory use over the limit. Any library that uses native code (JNI) is outside
+the control of the JVM, and apparently using `ByteBuffer` also doesn't count
+on the heap usage. There's not much one can do about such code except give a
+bigger overhead to the tasks.
+
+This function returns an object with numerous fields (all numbers are megabytes):
+
+1. `heap` - The heap size.
+2. `metaSpace` - The meta space size.
+3. `misc` - The additional overhead taken for everything else.
+4. `all` - The task's allocated memory. Same as task.memory.toMega()
+5. `jvmOpts` - The string to include in the Java command line for the program
+to set the memory values as calculated. This string must not be quoted in
+the shell script.
+
 #### `sizeOf`
 
 `sizeOf` is an attempt to get the number of things in a collection. Nextflow
@@ -35,6 +71,18 @@ one of those, otherwise it returns 1 unless the thing is _null_, in which case
 it returns 0.
 
 See https://github.com/nextflow-io/nextflow/issues/2425
+
+This issue can be fixed natively in Nextflow by using `files` instead of `file`
+to expand wildcards for file matching. `files` always returns a list, even if
+there is only one file. One can also use the `arity` attribute (Nextflow 23.9
+and later) to specify the match should always be a list. For example:
+
+```
+file("*.txt", arity: '1..*')
+```
+
+`arity` is documented for the `path` function as an input to a process, but
+is applicable to the `file` function elsewhere too.
 
 #### `makeCollection`
 
