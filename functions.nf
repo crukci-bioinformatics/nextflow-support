@@ -54,7 +54,7 @@ def javaMemoryOptions(task)
     final def taskAllocation = task.memory.toMega()
 
     // Miscellaneous overhead for JNI, ByteBuffers etc.
-    def overhead = params.getOrDefault('java_overhead_size', 64)
+    def overhead = params.getOrDefault('java_overhead_size', 64) * task.attempt
     if (overhead < minimumOverhead)
     {
         log.warn "java_overhead_size is set to ${overhead}, which is too small. Setting to the minimum of ${minimumOverhead}MB."
@@ -62,7 +62,7 @@ def javaMemoryOptions(task)
     }
 
     // Meta space allocation.
-    def metaSpace = params.getOrDefault('java_metaspace_size', 128)
+    def metaSpace = params.getOrDefault('java_metaspace_size', 128) * task.attempt
     if (metaSpace < minimumMeta)
     {
         log.warn "java_metaspace_size is set to ${metaSpace}, which is too small. Setting to the minimum of ${minimumMeta}MB."
@@ -73,16 +73,9 @@ def javaMemoryOptions(task)
 
     if (heap < minimumHeap)
     {
-        log.error "Task memory ${taskAllocation}MB; JVM overhead ${overhead}MB; Java Meta Space ${metaSpace}MB"
+        log.error "Task ${task.name} attempt ${task.attempt}: allocated ${taskAllocation}MB; JVM overhead ${overhead}MB; Java Meta Space ${metaSpace}MB"
         throw new Exception("No memory left after taking JVM overheads. Need at least ${overhead + metaSpace + minimumHeap} MB allocated.")
     }
-
-    // Set the initial memory to be a quarter of the maximum heap size up to
-    // a maximum of 1GB.
-    // def initial = Math.max(minimumHeap, Math.min(1024, Math.floorDiv(heap, 4)))
-
-    // Scrub the above. We've claimed the memory, so it's there for use. Probably
-    // more efficient to start with the whole lot.
 
     def info = new Expando()
     info.heap = heap

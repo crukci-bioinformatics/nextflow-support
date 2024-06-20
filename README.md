@@ -32,17 +32,20 @@ replaces it and puts a limit on the "meta space" the JVM uses, which is where
 class definitions are stored amongst other things.
 
 By default now the meta space is given 128MB and "other" overhead 64MB. This
-can be tuned with the parameters "java_metaspace_size" and "java_overhead_size"
+can be tuned with the parameters "`java_metaspace_size`" and "`java_overhead_size`"
 to increase them if jobs are still failing. One shouldn't need huge amounts of
 memory for these.
+
+Whatever the initial amount set for the two overheads, they will both scale linearly
+with repeated attempts at the task. For example, with the default 128MB for
+the meta space, the first attempt will claim 128MB, the second 256MB, the third
+384MB and so on. We would expect the total allocated for the task to at least
+also scale linearly (some may be exponential), so increasing these overheads
+improves the chances of the jobs actually completing.
 
 The amount of memory given to the JVM for its heap, where the running objects
 and stored, is thus the task's allocation less the meta space less the
 miscellaneous overhead.
-
-One might see `OutOfMemoryError` messages if things fail that won't be solved
-by giving more to the heap if a job fills the meta space but requires more
-(giving more to the heap won't solve the issue).
 
 There are some things outside of the control of the JVM that might push the
 memory use over the limit. Any library that uses native code (JNI) is outside
