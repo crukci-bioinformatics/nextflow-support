@@ -147,11 +147,12 @@ def makeCollection(thingOrList)
  *
  * Note that commons-lang3 must be made available to use this function.
  * This is done by creating a "lib" directory in your pipeline and either
- * putting the commons-lang3 JAR file into that directory or (better)
- * putting a Groovy script in there that can still use @Grab to fetch
- * the file. This change came in with 24.10.
+ * putting the commons-lang3 JAR file into that directory. The suggestion
+ * of putting a Groovy script "lib" that can still use @Grab to fetch
+ * the file does not work. This change came in with 24.10.0.
  *
  * See https://github.com/nextflow-io/nextflow/issues/5234
+ * and https://github.com/nextflow-io/nextflow/issues/5441
  */
 def safeName(name)
 {
