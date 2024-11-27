@@ -191,3 +191,18 @@ or not.
 One needs to be very careful with this script that the output from the preceding
 task is not used by more than one following task. You cannot use this if the
 input is used by multiple instances of a process.
+
+## Cleaning Intermediate Files
+
+The above section about `removeInput.groovy` was the initial attempt to
+reduce the working disk space needed by a Nextflow pipeline at the cost of
+allowing the pipeline to resume. Since this was written, a better strategy
+has come to light that allows intermediate files to be turned into a sparse
+file with the same reported size, date and permissions as the original.
+
+The technique is documented in
+[this blog post](https://pirl.unc.edu/blog/tricking-nextflows-caching-system-to-drastically-reduce-storage-usage).
+It's been put into this project by taking a copy of the
+[GEMmaker `clean_work_files.sh` script](https://github.com/SystemsGenetics/GEMmaker/blob/master/bin/clean_work_files.sh)
+(all credit to the original authors) and creating the `cleaning.nf` Nextflow
+file from which the process can be included.

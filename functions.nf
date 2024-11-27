@@ -2,10 +2,6 @@
  * Miscellaneous helper functions.
  */
 
-@Grab('org.apache.commons:commons-lang3:3.12.0')
-
-import static org.apache.commons.lang3.CharUtils.isAsciiAlphanumeric
-
 import java.text.*
 
 /**
@@ -148,6 +144,14 @@ def makeCollection(thingOrList)
  * Make a name safe to be used as a file name. Everything that's not
  * alphanumeric, dot, underscore or hyphen is converted to an underscore.
  * Spaces are just removed.
+ *
+ * Note that commons-lang3 must be made available to use this function.
+ * This is done by creating a "lib" directory in your pipeline and either
+ * putting the commons-lang3 JAR file into that directory or (better)
+ * putting a Groovy script in there that can still use @Grab to fetch
+ * the file. This change came in with 24.10.
+ *
+ * See https://github.com/nextflow-io/nextflow/issues/5234
  */
 def safeName(name)
 {
@@ -159,7 +163,7 @@ def safeName(name)
     {
         switch (c)
         {
-            case { isAsciiAlphanumeric(it) }:
+            case { org.apache.commons.lang3.CharUtils.isAsciiAlphanumeric(it) }:
             case '_':
             case '-':
             case '.':
